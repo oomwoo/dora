@@ -18,8 +18,4 @@ stream = picamera.array.PiRGBArray(camera)
 camera.capture(stream, 'rgb', use_video_port=True)
 print(stream.array.shape)
 
-# run neural network
-
-
-
 camera.close()

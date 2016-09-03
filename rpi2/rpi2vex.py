@@ -50,11 +50,12 @@ log_file_name = []
 autonomous_thread = []
 
 # CNN setup
-W = 24
+W = 32
 H = W
 my_dir = os.path.expanduser("~") + "/dora/"
 video_dir = my_dir + "rpi2/video/"
-param_file_name = my_dir + "train/model/trained_dora_model_24x24_3x3x16.prm"
+# param_file_name = my_dir + "train/model/trained_dora_model_24x24_3x3x16.prm"
+param_file_name = my_dir + "train/model/trained_dora_model_32x32.prm"
 class_names = ["forward", "left", "right", "backward"]    # from ROBOT-C bot.c
 nclasses = len(class_names)
 size = H, W
@@ -62,7 +63,7 @@ size = H, W
 be = gen_backend(backend='cpu', batch_size=1)    # NN backend
 init_uni = Uniform(low=-0.1, high=0.1)           # Unnecessary NN weight initialization
 bn = True                                        # enable NN batch normalization
-layers = [Conv((3, 3, 16), init=init_uni, activation=Rectlin(), batch_norm=bn),
+layers = [Conv((5, 5, 16), init=init_uni, activation=Rectlin(), batch_norm=bn),
           Pooling((2, 2)),
           Conv((3, 3, 32), init=init_uni, activation=Rectlin(), batch_norm=bn),
           Pooling((2, 2)),

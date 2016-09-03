@@ -36,15 +36,16 @@ def show_sample(x):
     image = image[[2, 1, 0], :, :]
     image = np.transpose(image, (1, 2, 0))
     image = Image.fromarray(np.uint8(image + 127))
-    image.show()
+    # image.show()
 
 w = 160
 h = 120
-W = 24  # CNN input image size
+W = 32  # CNN input image size
 H = W
 fps = 90
 my_dir = os.path.expanduser("~") + "/dora/"
-param_file_name = my_dir + "train/model/trained_dora_model_24x24_3x3x16.prm"
+# param_file_name = my_dir + "train/model/trained_dora_model_24x24_3x3x16.prm"
+param_file_name = my_dir + "train/model/trained_dora_model_32x32.prm"
 class_names = ["forward", "left", "right", "backward"]  # from ROBOT-C bot.c
 nclasses = len(class_names)
 
@@ -53,6 +54,8 @@ camera = picamera.PiCamera()
 camera.resolution = (w, h)
 camera.framerate = fps
 camera.exposure_mode = 'fixedfps'
+# camera.brightness = 70
+# camera.contrast = 10
 
 # Capture image
 stream = picamera.array.PiRGBArray(camera)
@@ -66,7 +69,7 @@ image.show()
 be = gen_backend(backend='cpu', batch_size=1)    # NN backend
 init_uni = Uniform(low=-0.1, high=0.1)           # Unnecessary NN weight initialization
 bn = True                                        # enable NN batch normalization
-layers = [Conv((3, 3, 16), init=init_uni, activation=Rectlin(), batch_norm=bn),
+layers = [Conv((5, 5, 16), init=init_uni, activation=Rectlin(), batch_norm=bn),
           Pooling((2, 2)),
           Conv((3, 3, 32), init=init_uni, activation=Rectlin(), batch_norm=bn),
           Pooling((2, 2)),
