@@ -62,7 +62,7 @@ UserCommand UserCmdFromRpi = USER_CMD_NONE;
 short user_cmd_age = USER_CMD_MAX_AGE;
 
 bool stop_button_pressed = false;
-bool forget = false;
+bool discard_current_recording = false;
 bool humanControl = true;
 bool recording = false;
 bool suppress_user_command;
@@ -188,7 +188,7 @@ void UpdateLCD()
 		}
 		//Display command, who has control
 		displayLCDNumber(0, 1, UserCmd, 1);
-		displayLCDNumber(0, 5, forget, 1);
+		displayLCDNumber(0, 5, discard_current_recording, 1);
 		displayLCDNumber(0, 9, stop_button_pressed, 1);
 		displayLCDNumber(0, 13, humanControl, 1);
 		displayLCDNumber(1, 13, LinkCmd, 2);
@@ -290,9 +290,22 @@ void UserControlFunction()
 		////////////////////////////////////////////////////////////////////////////
 
 		LinkCmd = LINK_CMD_NONE;
-		forget = false;
+		discard_current_recording = false;
 
-		if (vexRT[Btn7R])
+		if (vexRT[Btn7D])
+		{
+			// Highest priority command
+			// Transfer control from robot to the human operator (manual control)
+			humanControl = true;
+			LinkCmd = LINK_CMD_MANUAL_CONTROL;
+		}
+		else if (vexRT[Btn8D])
+		{
+			// Terminate connection - Raspberry Pi shuts down
+			humanControl = false;
+			LinkCmd = LINK_CMD_SHUTDOWN;
+		}
+		else if (vexRT[Btn7R])
 		{
 			// Have Raspberry Pi start capturing video and user commands (joystick, buttons, etc.)
 			LinkCmd = LINK_CMD_START_RECORDING;
@@ -304,25 +317,19 @@ void UserControlFunction()
 			LinkCmd = LINK_CMD_STOP_RECORDING;
 			recording = false;
 		}
+		else if (vexRT[Btn8R])
+		{
+			// discard_current_recording last few seconds of training (if the human operator made a mistake)
+			discard_current_recording = true;
+			LinkCmd = LINK_CMD_DISCARD_CURRENT_RECORDING;
+		}
 		else if (vexRT[Btn7U])
 		{
+			// Lowest priority command
 			// Transfer control from human operator to robot (autonomous control)
 			humanControl = false;
 			LinkCmd = LINK_CMD_AUTONOMOUS_CONTROL;
 			UserCmdFromRpi = USER_CMD_NONE;
-		}
-		else if (vexRT[Btn8D])
-		{
-			// Terminate connection - Raspberry Pi disconnects
-			humanControl = false;
-			LinkCmd = LINK_CMD_TERMINATE;
-		}
-		else if (vexRT[Btn7D])
-		{
-			// Highest priority command
-			// Transfer control from robot to the human operator (manual control)
-			humanControl = true;
-			LinkCmd = LINK_CMD_MANUAL_CONTROL;
 		}
 
 		// Send command(s) to Raspberry Pi
