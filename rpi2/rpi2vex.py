@@ -306,7 +306,7 @@ while True:
                 if start_recording():
                     write_to_log(rcv)
         elif val == 255:
-            # TODO LFE: terminate training and upload data to server
+            # TODO LFE: quit script (and shut down Raspberry Pi by default)
             debug_print("Shutting down Raspberry Pi")
             break
         else:
