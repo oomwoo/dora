@@ -14,7 +14,7 @@
 #pragma platform(VEX)
 
 #include "Vex_Competition_Includes.c"   // Main competition background code...do not modify!
-#include "UART_Comm_Link_Includes.c"    // Make VEX Cortex UART talk to Raspberry Pi
+#include "uart_lib.c"    // Make VEX Cortex UART talk to Raspberry Pi
 
 // Operate a VEX EDR robot manually and autonomously
 // The robot must be connected to a properly-configured Raspberry Pi
