@@ -9,4 +9,4 @@ sudo apt-get install libyaml-dev libhdf5-dev
 sudo apt-get install imagemagick
 cd ..
 git clone http://github.com/NervanaSystems/neon.git
-cd neon $$ make sysinstall
+cd neon $$ sudo make sysinstall
