@@ -317,7 +317,7 @@ void UserControlFunction()
 			LinkCmd = LINK_CMD_STOP_RECORDING;
 			recording = false;
 		}
-		else if (vexRT[Btn8R])
+		else if (vexRT[Btn8L])
 		{
 			// discard_current_recording last few seconds of training (if the human operator made a mistake)
 			discard_current_recording = true;
