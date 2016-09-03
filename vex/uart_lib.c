@@ -13,9 +13,7 @@ enum LinkCommand
 	LINK_CMD_AUTONOMOUS_CONTROL,
 	LINK_CMD_START_RECORDING,
 	LINK_CMD_STOP_RECORDING,
-	LINK_CMD_FORGET = 253,
-	LINK_CMD_TERMINATE_AND_UPLOAD = 254,
-	LINK_CMD_TERMINATE = 255
+	LINK_CMD_SHUTDOWN = 255
 };
 
 const char toHex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
