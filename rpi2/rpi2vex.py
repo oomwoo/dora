@@ -43,7 +43,7 @@ video_file_ext = ".h264"
 log_file_ext = ".txt"
 log_file = []
 iso = 0
-shutdown_on_exit = False
+shutdown_on_exit = True
 autonomous = False
 video_file_name = []
 log_file_name = []
@@ -294,7 +294,7 @@ while True:
             # L04: stop capture
             if camera.recording():
                 stop_recording()
-        elif val == 253:
+        elif val == 254:
             # LFD: discard current recording (if human made a mistake in training)
             if camera.recording():
                 debug_print("Discarding current recording")
@@ -305,9 +305,9 @@ while True:
                 # Resume recording
                 if start_recording():
                     write_to_log(rcv)
-        elif val == 254:
+        elif val == 255:
             # TODO LFE: terminate training and upload data to server
-            debug_print("Terminating link and uploading data")
+            debug_print("Shutting down Raspberry Pi")
             break
         else:
             # L00 and otherwise: none (no command)
@@ -317,3 +317,5 @@ while True:
 
 stop_recording()
 enable_autonomous_driving(False)
+if shutdown_on_exit:
+	os.system("sudo shutdown now -h")
