@@ -48,14 +48,13 @@ autonomous = False
 video_file_name = []
 log_file_name = []
 autonomous_thread = []
-cnt = 0
 
 # CNN setup
 W = 24
 H = W
-my_dir = os.path.expanduser("~") + "/dora/rpi2/"
-video_dir = my_dir + "video/"
-param_file_name = my_dir + "model/trained_dora_model_24x24_3x3x16.prm"
+my_dir = os.path.expanduser("~") + "/dora/"
+video_dir = my_dir + "rpi2/video/"
+param_file_name = my_dir + "train/model/trained_dora_model_24x24_3x3x16.prm"
 class_names = ["forward", "left", "right", "backward"]    # from ROBOT-C bot.c
 nclasses = len(class_names)
 size = H, W
@@ -99,8 +98,8 @@ class AutonomousThread (threading.Thread):
         threading.Thread.__init__(self)
         self.daemon = True
         debug_print("Autonomous thread init")
-        cnt = 0
-	rm_files(my_dir + "debug/*")
+        self.cnt = 0
+	rm_files(my_dir + "rpi2/debug/*")
     def run(self):
         while True:
             if not autonomous:
@@ -116,8 +115,8 @@ class AutonomousThread (threading.Thread):
             image = Image.fromarray(stream.array)
             image = image.resize(size, Image.ANTIALIAS)
             if (debug):
-                image.save(my_dir + "debug/capture" + str(cnt) + ".png", "PNG")
-                cnt = cnt+1
+                image.save(my_dir + "rpi2/debug/capture" + str(self.cnt) + ".png", "PNG")
+                self.cnt = self.cnt + 1
             r, g, b = image.split()
             image = Image.merge("RGB", (b, g, r))
             image = np.asarray(image, dtype=np.float32)
