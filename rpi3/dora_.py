@@ -33,13 +33,18 @@ hor_flip = False
 ver_flip = False
 video_file_ext = ".h264"
 log_file_ext = ".txt"
-log_file = []
 iso = 0
 shutdown_on_exit = True
 autonomous = False
+
+log_file = []
 video_file_name = []
 log_file_name = []
 autonomous_thread = []
+USER_CMD_DRIVE_FORWARD = 0
+USER_CMD_TURN_LEFT = 1
+USER_CMD_TURN_RIGHT = 2
+USER_CMD_DRIVE_BACKWARD = 3
 
 # CNN setup
 W = 32
@@ -51,6 +56,7 @@ param_file_name = my_dir + "train/model/trained_dora_model_32x32.prm"
 class_names = ["forward", "left", "right", "backward"]    # from ROBOT-C bot.c
 nclasses = len(class_names)
 size = H, W
+file_name_prefix = video_dir + file_name_prefix
 
 be = gen_backend(backend='cpu', batch_size=1)    # NN backend
 init_uni = Uniform(low=-0.1, high=0.1)           # Unnecessary NN weight initialization
@@ -68,8 +74,6 @@ model.load_params(param_file_name, load_states=False)
 mh = Adafruit_MotorHAT(addr=0x60)
 right_motor = mh.getMotor(1)
 left_motor = mh.getMotor(3)
-
-file_name_prefix = video_dir + file_name_prefix
 
 camera = picamera.PiCamera()
 camera.resolution = (w, h)
@@ -135,6 +139,7 @@ def get_file_max_idx(prefix, file_ext):
 
 def start_recording():
   global log_file, video_file_name, log_file_name
+  
   if not(camera.recording):
     n1 = get_file_max_idx(file_name_prefix, video_file_ext)
     n2 = get_file_max_idx(file_name_prefix, log_file_ext)
@@ -209,32 +214,82 @@ def set_speed(speed):
 # Control over network
 @webiopi.macro
 def go_forward():
-    left_motor.run(Adafruit_MotorHAT.BACKWARD)
-    right_motor.run(Adafruit_MotorHAT.FORWARD)
+  global autonomous_override
+  autonomous_override = True
+  left_motor.run(Adafruit_MotorHAT.BACKWARD)
+  right_motor.run(Adafruit_MotorHAT.FORWARD)
+  write_to_log(USER_CMD_DRIVE_FORWARD)
 
 @webiopi.macro
 def go_backward():
+  global autonomous_override
+  autonomous_override = True
   left_motor.run(Adafruit_MotorHAT.FORWARD)
   right_motor.run(Adafruit_MotorHAT.BACKWARD)
+  write_to_log(USER_CMD_DRIVE_BACKWARD)
 
 @webiopi.macro
 def turn_left():
+  global autonomous_override
+  autonomous_override = True
   left_motor.run(Adafruit_MotorHAT.BACKWARD)
   right_motor.run(Adafruit_MotorHAT.RELEASE)
+  write_to_log(USER_CMD_TURN_LEFT)
 
 @webiopi.macro
 def turn_right():
+  global autonomous_override
+  autonomous_override = True
   left_motor.run(Adafruit_MotorHAT.RELEASE)
   right_motor.run(Adafruit_MotorHAT.FORWARD)
+  write_to_log(USER_CMD_TURN_RIGHT)
 
 @webiopi.macro
 def stop():
+  global autonomous_override
+  autonomous_override = True
   left_motor.run(Adafruit_MotorHAT.RELEASE)
   right_motor.run(Adafruit_MotorHAT.RELEASE)
+
+@webiopi.macro
+def manual_button_release():
+  global autonomous_override
+  autonomous_override = False
+  if not autonomous:
+    stop()
 
 @webiopi.macro
 def shutdown_pi():
   os.system("sudo shutdown now -h")
+
+@webiopi.macro
+def autonomous_toggle():
+  global autonomous
+  enable_autonomous_driving(not autonomous)
+  return autonomous
+
+@webiopi.macro
+def recording_toggle():
+  if camera.recording:
+    stop_recording()
+  elsif not autonomous:
+    start_recording()
+  return camera.recording
+
+@webiopi.macro
+def discard_recording():
+  if camera.recording:
+    # debug_print("Discarding current recording")
+    stop_recording()
+    # Delete last video and associated log
+    os.remove(video_file_name)
+    os.remove(log_file_name)
+  return camera.recording
+
+@webiopi.macro
+def upload_recordings():
+  # TODO
+  return True
 
 # Called by WebIOPi at script loading
 def setup():
