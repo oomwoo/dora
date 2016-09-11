@@ -57,6 +57,7 @@ class_names = ["forward", "left", "right", "backward"]    # from ROBOT-C bot.c
 nclasses = len(class_names)
 size = H, W
 file_name_prefix = video_dir + file_name_prefix
+last_user_command = []
 
 be = gen_backend(backend='cpu', batch_size=1)    # NN backend
 init_uni = Uniform(low=-0.1, high=0.1)           # Unnecessary NN weight initialization
@@ -185,11 +186,17 @@ def enable_autonomous_driving(enable):
 
 def write_to_log(txt):
   if camera.recording:
-    # Prepend timestamp
-    s = repr(time.time()) + " " + txt
-    # Save all commands into log file
-    debug_print(s)
-    log_file.write(s)
+    if last_user_command == []:
+      pass
+    do_write_to_log(last_user_command)
+    do_write_to_log(txt)
+
+def do_write_to_log(txt):
+  # Prepend timestamp
+  s = repr(time.time()) + " " + txt
+  # Save all commands into log file
+  debug_print(s)
+  log_file.write(s)
 
 def debug_print(s):
   if debug:
