@@ -13,6 +13,8 @@ default_motor_speed = 150
 mh = Adafruit_MotorHAT(addr=0x60)
 right_motor = mh.getMotor(1)
 left_motor = mh.getMotor(3)
+is_recording = False
+motor_speed = default_motor_speed
 
 # Disable motors on script shutdown
 def turnOffMotors():
@@ -22,6 +24,7 @@ def turnOffMotors():
     mh.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
 
 def set_speed(speed):
+    global motor_speed
     if speed > 255:
         speed = 255
     elif speed < 10:
@@ -56,13 +59,23 @@ def stop():
     left_motor.run(Adafruit_MotorHAT.RELEASE)
     right_motor.run(Adafruit_MotorHAT.RELEASE)
 
-    
-# Defaults
+@webiopi.macro
+def increase_speed():
+    set_speed(motor_speed + 10)
+
+@webiopi.macro
+def decrease_speed():
+    set_speed(motor_speed - 10)
+
+@webiopi.macro
+def toggle_recording():
+    global is_recording
+    is_recording = not is_recording
+    return is_recording
 
 # Called by WebIOPi at script loading
 def setup():
     set_speed(default_motor_speed)
-    stop()
 
 # Called by WebIOPi at server shutdown
 def destroy():

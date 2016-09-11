@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content = "height = device-height, width = 420, user-scalable = no" /> 
+	<meta name="viewport" content = "height = device-height, width = device-width, user-scalable = yes" /> 
 	<title>Dora</title>
 	<script type="text/javascript" src="/webiopi.js"></script>
 	<script type="text/javascript">
@@ -23,6 +23,23 @@
 		
 		button = webiopi().createButton("bt_down", "\\/", go_backward, stop);
 		$("#down").append(button);
+
+		button = webiopi().createButton("bt_toggle_recording", "R", toggle_recording);
+		$("#video").append(button);
+		button = webiopi().createButton("bt_discard_recording", ":(", discard_recording);
+		$("#video").append(button);
+		button = webiopi().createButton("bt_upload_recordings", "^", upload_recordings);
+		$("#video").append(button);
+
+		button = webiopi().createButton("bt_increase_speed", "+", increase_speed);
+		$("#control").append(button);
+		button = webiopi().createButton("bt_decrease_speed", "-", decrease_speed);
+		$("#control").append(button);
+		button = webiopi().createButton("bt_toggle_self_driving", "A!", toggle_self_driving);
+		$("#control").append(button);
+
+		button = webiopi().createButton("bt_shutdown_pi", "...", shutdown_pi);
+		$("#misc").append(button);
 	}
 	
 	function go_forward() {
@@ -45,6 +62,37 @@
 		webiopi().callMacro("stop");
 	}
 	
+	function increase_speed() {
+		webiopi().callMacro("increase_speed");
+	}
+	
+	function decrease_speed() {
+		webiopi().callMacro("decrease_speed");
+	}
+	
+	function toggle_recording() {
+		var args = [];
+		webiopi().callMacro("toggle_recording", args, toggleRecordingCallback);
+	}
+
+	function toggleRecordingCallback(macro, args, data) {
+		// alert(macro + " returned with " + data)
+		color = (data) ? 'LawnGreen' : 'gray'
+		document.getElementById('bt_toggle_recording').style.backgroundColor = color
+	}
+	
+	function discard_recording() {
+	}
+
+	function upload_recordings() {
+	}
+
+	function toggle_self_driving() {
+	}
+
+	function shutdown_pi() {
+	}
+
 	webiopi().ready(init);
 		
 	</script>
@@ -61,10 +109,12 @@
 </head>
 <body>
 	<div id="content" align="center">
-		Dora Joystick<br/>
 		<div id="up"></div>
 		<div id="middle"></div>
 		<div id="down"></div>
+		<div id="video"></div>
+		<div id="control"></div>
+		<div id="misc"></div>
 	</div>
 </body>
 </html>
