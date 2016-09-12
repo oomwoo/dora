@@ -249,7 +249,7 @@ if fps > 0:
 if iso > 0:
     camera.iso = iso
 camera.hflip = hor_flip
-camera.vfilp = ver_flip
+camera.vflip = ver_flip
 camera.led = False
 camera.exposure_mode = 'fixedfps'
 

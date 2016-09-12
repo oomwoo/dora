@@ -9,19 +9,19 @@
 	function init() {
 		var button;
 			
-		button = webiopi().createButton("bt_up", "/\\", go_forward, stop);
+		button = webiopi().createButton("bt_up", "/\\", go_forward, joystick_release);
 		$("#up").append(button);
 		
-		button = webiopi().createButton("bt_left", "<", turn_left, stop);
+		button = webiopi().createButton("bt_left", "<", turn_left, joystick_release);
 		$("#middle").append(button);
 		
-		button = webiopi().createButton("bt_stop", "X", stop);
+		button = webiopi().createButton("bt_stop", "X", stop, joystick_release);
 		$("#middle").append(button);
 		
-		button = webiopi().createButton("bt_right", ">", turn_right, stop);
+		button = webiopi().createButton("bt_right", ">", turn_right, joystick_release);
 		$("#middle").append(button);
 		
-		button = webiopi().createButton("bt_down", "\\/", go_backward, stop);
+		button = webiopi().createButton("bt_down", "\\/", go_backward, joystick_release);
 		$("#down").append(button);
 
 		button = webiopi().createButton("bt_toggle_recording", "R", toggle_recording);
@@ -35,7 +35,7 @@
 		$("#control").append(button);
 		button = webiopi().createButton("bt_decrease_speed", "-", decrease_speed);
 		$("#control").append(button);
-		button = webiopi().createButton("bt_toggle_self_driving", "A!", toggle_self_driving);
+		button = webiopi().createButton("bt_toggle_self_driving", "A", toggle_self_driving);
 		$("#control").append(button);
 
 		button = webiopi().createButton("bt_shutdown_pi", "...", shutdown_pi);
@@ -44,6 +44,10 @@
 	
 	function go_forward() {
 		webiopi().callMacro("go_forward");
+	}
+		
+	function joystick_release() {
+		webiopi().callMacro("joystick_release");
 	}
 		
 	function go_backward() {
@@ -57,7 +61,7 @@
 	function turn_left() {
 		webiopi().callMacro("turn_left");
 	}
-		
+				
 	function stop() {
 		webiopi().callMacro("stop");
 	}
@@ -71,26 +75,47 @@
 	}
 	
 	function toggle_recording() {
-		var args = [];
-		webiopi().callMacro("toggle_recording", args, toggleRecordingCallback);
+		webiopi().callMacro("toggle_recording", [], toggleRecordingCallback);
 	}
 
 	function toggleRecordingCallback(macro, args, data) {
-		// alert(macro + " returned with " + data)
-		color = (data) ? 'LawnGreen' : 'gray'
-		document.getElementById('bt_toggle_recording').style.backgroundColor = color
+		color = (data) ? 'LawnGreen' : 'gray';
+		document.getElementById('bt_toggle_recording').style.backgroundColor = color;
 	}
 	
 	function discard_recording() {
+		webiopi().callMacro('discard_recording', [], discardRecordingCallback);
 	}
 
+	function discardRecordingCallback(macro, args, data) {
+		document.getElementById('bt_toggle_recording').style.backgroundColor = 'gray';
+	}
+	
 	function upload_recordings() {
+		document.getElementById('bt_upload_recordings').style.backgroundColor = 'Yellow';
+		webiopi().callMacro("upload_recordings", [], uploadRecordingsCallback);
 	}
 
+	function uploadRecordingsCallback(macro, args, data) {
+		color = (data) ? 'LawnGreen' : 'Red';
+		document.getElementById('bt_upload_recordings').style.backgroundColor = color;
+	}
+	
 	function toggle_self_driving() {
+		webiopi().callMacro("toggle_self_driving", [], toggleSelfDrivingCallback);
 	}
 
+	function toggleSelfDrivingCallback(macro, args, data) {
+		color = (data) ? 'LawnGreen' : 'gray';
+		document.getElementById('bt_toggle_self_driving').style.backgroundColor = color;
+		document.getElementById('bt_toggle_recording').style.backgroundColor = 'gray';
+	}
+	
 	function shutdown_pi() {
+		document.getElementById('bt_toggle_recording').style.backgroundColor = 'gray';
+		document.getElementById('bt_shutdown_pi').style.backgroundColor = 'red';
+		document.getElementById('bt_toggle_self_driving').style.backgroundColor = 'gray';
+		webiopi().callMacro("shutdown_pi");
 	}
 
 	webiopi().ready(init);
