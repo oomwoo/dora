@@ -5,19 +5,25 @@ import picamera.array
 from PIL import Image
 
 
-fps = 90
+fps = 30
 w = 320
 h = 240
+use_video_port = True
 
 camera = picamera.PiCamera()
+import time
 camera.resolution = (w, h)
 camera.framerate = fps
-camera.exposure_mode = 'fixedfps'
+# camera.exposure_mode = 'fixedfps'
+
+# Let exposure work
+time.sleep(1)
 
 # get camera picture
 stream = picamera.array.PiRGBArray(camera)
-camera.capture(stream, 'rgb', use_video_port=False)
-#camera.capture(stream, 'rgb', use_video_port=True)
+camera.capture(stream, 'rgb', use_video_port=use_video_port)
+print("use_video_port="+repr(use_video_port))
+print("camera.framerate="+repr(camera.framerate))
 camera.close()
 
 image = Image.fromarray(stream.array)

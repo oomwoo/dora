@@ -22,6 +22,8 @@ from neon.data.dataiterator import ArrayIterator
 
 # Configuration defaults
 default_motor_speed = 150
+motor_speed_max = 255
+motor_speed_min = 50
 motor_speed_increment = 20
 debug = True
 fps = 30
@@ -281,10 +283,10 @@ def turn_off_motors():
 
 def set_speed(speed):
   global motor_speed
-  if speed > 255:
-    speed = 255
-  elif speed < 10:
-    speed = 10
+  if speed > motor_speed_max:
+    speed = motor_speed_max
+  elif speed < motor_speed_min:
+    speed = motor_speed_min
   motor_speed = speed
   left_motor.setSpeed(speed)
   right_motor.setSpeed(speed)

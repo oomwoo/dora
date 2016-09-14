@@ -12,7 +12,7 @@ except:
     exit()
 
 camera.resolution = (320, 240)
-camera.framerate = 90
+camera.framerate = 30
 #camera.hflip = True
 #camera.vfilp = True
 quality = 23

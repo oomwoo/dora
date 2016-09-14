@@ -53,11 +53,10 @@ nclasses = len(class_names)
 camera = picamera.PiCamera()
 camera.resolution = (w, h)
 camera.framerate = fps
-camera.exposure_mode = 'fixedfps'
-# camera.brightness = 70
-# camera.contrast = 10
+# camera.exposure_mode = 'fixedfps'
 
 # Capture image
+time.sleep(1)  # Let exposure work
 stream = picamera.array.PiRGBArray(camera)
 camera.capture(stream, 'rgb', use_video_port=True)
 camera.close()
