@@ -30,7 +30,8 @@ sudo ./setup.sh
 # log in to IP:8000, user webiopi, password raspberry
 # you should see WebIOPi Main Menu in your browser
 # to access bot over internet, register at https://developer.weaved.com/portal/
-cd /etc/systemd/system/
-sudo wget https://raw.githubusercontent.com/doublebind/raspi/master/webiopi.service
+# cd /etc/systemd/system/
+# sudo wget https://raw.githubusercontent.com/doublebind/raspi/master/webiopi.service
+sudo cp ~/dora/rpi3/install/webiopi.service /etc/systemd/system/
 sudo systemctl start webiopi
 sudo systemctl enable webiopi
